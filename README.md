@@ -1,6 +1,6 @@
 # mycargo
 
-The goal of this project is to make life easier when creating a new rust prohect.
+The goal of this project is to make life easier when creating a new rust project.
 
 ## What can it do
 
