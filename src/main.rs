@@ -23,7 +23,7 @@ fn main() {
     }
 
     let project_name = &args[2];
-    let target_path = project_name.to_string() + "\\.vscode";
+    let target_path = project_name.to_string() + "/.vscode";
 
     // create project with cargo new
     create_new_project(project_name).expect("Could not create an new project with cargo.");
@@ -34,8 +34,8 @@ fn main() {
     }
 
     // create configuration file for debugging and launching rust programm  with shourtcut (mine: F5 to lauch and F7 to debug)
-    fs::write(target_path.clone() + "\\" + "tasks.json", get_task_file_content()).expect("tasks.json could not be created");
-    fs::write(target_path.clone() + "\\" + "launch.json", get_launch_file_content(project_name)).expect("launch.json could not be created");
+    fs::write(target_path.clone() + "/" + "tasks.json", get_task_file_content()).expect("tasks.json could not be created");
+    fs::write(target_path.clone() + "/" + "launch.json", get_launch_file_content(project_name)).expect("launch.json could not be created");
 
    // start vs code
     start_vs_code(project_name).expect("Could not start vs code.");
@@ -66,9 +66,15 @@ fn create_new_project(project_name: &str) -> io::Result<Output> {
 
 /// opens ms code by calling "code .//project_name"
 fn start_vs_code(project_name: &str) -> io::Result<Output> {
-    let command = Command::new("cmd")
-        .args(&["/C".to_string(), "code".to_string(), ".".to_string() + "\\" + project_name])
-        .output();
+    let command = if cfg!(target_os = "windows") {
+        Command::new("cmd")
+            .args(&["/C".to_string(), "code".to_string(), ".".to_string() + "/" + project_name])
+            .output()
+    } else {
+        Command::new("sh")
+            .args(&["-c".to_string(), "code".to_string() + " ." + "/" + project_name])
+            .output()
+    };
 
     match &command {
         Ok(output) => {
